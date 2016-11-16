@@ -53,6 +53,27 @@ static int show_filesystem_usage(const char *path) {
     return 1;
   }
 
+  struct btrfs_ioctl_fs_info_args fi_args;
+  if (ioctl(fd, BTRFS_IOC_FS_INFO, &fi_args) < 0) {
+    fprintf(stderr, "ioctl(%s, BTRFS_IOC_FS_INFO): %s\n", path,
+            strerror(errno));
+    return 1;
+  }
+
+  __u64 device_size = 0;
+  for (__u64 i = 0; i <= fi_args.max_id; i++) {
+    struct btrfs_ioctl_dev_info_args di_args = {0};
+    di_args.devid = i;
+    if (ioctl(fd, BTRFS_IOC_DEV_INFO, &di_args) < 0) {
+      if (errno == ENODEV) {
+        continue;
+      }
+      fprintf(stderr, "ioctl(%s, BTRFS_IOC_DEV_INFO): %s\n", path,
+              strerror(errno));
+    }
+    device_size += di_args.total_bytes;
+  }
+
   struct btrfs_ioctl_space_args *sargs = load_space_info(fd, path);
   if (sargs == NULL) {
     return 1;
@@ -79,10 +100,11 @@ static int show_filesystem_usage(const char *path) {
   }
 
   printf(
-      "{\"allocated\":{\"data\":%llu, \"metadata\":%llu, \"system\":%llu}, "
+      "{\"size\":%llu, \"allocated\":{\"data\":%llu, \"metadata\":%llu, "
+      "\"system\":%llu}, "
       "\"used\":{\"data\":%llu, \"metadata\":%llu, \"system\":%llu}}\n",
-      data_chunks, metadata_chunks, system_chunks, data_used, metadata_used,
-      system_used);
+      device_size, data_chunks, metadata_chunks, system_chunks, data_used,
+      metadata_used, system_used);
 
   free(sargs);
   closedir(dir);
