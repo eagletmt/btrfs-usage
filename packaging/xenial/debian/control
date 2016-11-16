@@ -1,0 +1,14 @@
+Source: btrfs-usage
+Section: admin
+Priority: optional
+Maintainer: Kohei Suzuki <eagletmt@gmail.com>
+Build-Depends: debhelper (>=9), cmake, btrfs-tools
+Standards-Version: 3.9.6
+Homepage: https://github.com/eagletmt/btrfs-usage
+Vcs-Git: https://github.com/eagletmt/btrfs-usage
+Vcs-Browser: https://github.com/eagletmt/btrfs-usage
+
+Package: btrfs-usage
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Show detailed btrfs usage in machine-readable format
