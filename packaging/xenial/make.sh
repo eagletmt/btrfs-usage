@@ -14,11 +14,11 @@ here="$PWD/$(dirname $0)"
 docker build -t "$IMAGE_TAG" "$here"
 source_archive="${NAME}_${version}.orig.tar.gz"
 git archive --format=tar --prefix "${NAME}-${version}/" "v${version}" | gzip > "$source_archive"
-# TODO: GPG sign
 docker run --rm \
   --volume "${here}/debian:/debian:ro" \
   --volume "${PWD}:/src:ro" \
   --volume "${here}:/output" \
+  --volume "/run/user/${UID}/gnupg/S.gpg-agent:/root/.gnupg/S.gpg-agent" \
   --workdir /build \
   "$IMAGE_TAG" \
-  bash -c "cp -a /debian . && ln -s /src/${source_archive} / && debuild -uc -us && cp -pv /*.deb /output/"
+  bash -c "cp -a /debian . && ln -s /src/${source_archive} / && gpg --import < /src/pub.asc && debuild && cp -pv /*.deb /*.debian.tar.xz /*.dsc /*.changes /output/"
