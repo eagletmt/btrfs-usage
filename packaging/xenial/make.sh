@@ -21,4 +21,4 @@ docker run --rm \
   --volume "/run/user/${UID}/gnupg/S.gpg-agent:/root/.gnupg/S.gpg-agent" \
   --workdir /build \
   "$IMAGE_TAG" \
-  bash -c "cp -a /debian . && ln -s /src/${source_archive} / && gpg --import < /src/pub.asc && debuild -pgpg2 && cp -pv /*.deb /*.debian.tar.xz /*.dsc /*.changes /output/"
+  bash -c "cp -a /debian . && ln -s /src/${source_archive} / && gpg2 --import < /src/pub.asc && debuild -pgpg2 && cp -pv /*.deb /*.debian.tar.xz /*.dsc /*.changes /output/"
