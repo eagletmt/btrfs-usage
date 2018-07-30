@@ -1,3 +1,9 @@
+btrfs-usage (0.1.0-2) xenial; urgency=medium
+
+  * Rebuild
+
+ -- Kohei Suzuki <eagletmt@gmail.com>  Mon, 30 Jul 2018 17:30:17 +0900
+
 btrfs-usage (0.1.0-1) xenial; urgency=medium
 
   * Initial release
